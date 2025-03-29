@@ -1,0 +1,32 @@
+# Cypress Folders
+cypress/downloads/
+cypress/screenshots/
+cypress/videos/
+
+# Node dependencies
+node_modules/
+
+# Build artifacts
+dist/
+*.log
+
+# Environment variables file (if used)
+cypress.env.json
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE specific files
+.idea/
+.vscode/
+*.iml
+
+# Node
+npm-debug.log
+yarn-debug.log
+yarn-error.log
+
+# IDE
+*.swp
+*.swo 
