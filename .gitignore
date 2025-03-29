@@ -12,6 +12,8 @@ dist/
 
 # Environment variables file (if used)
 cypress.env.json
+.env
+.env.*
 
 # OS generated files
 .DS_Store

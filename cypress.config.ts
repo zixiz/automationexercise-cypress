@@ -2,7 +2,7 @@ import { defineConfig } from 'cypress';
 
 export default defineConfig({
   e2e: {
-    baseUrl: 'http://automationexercise.com',
+    baseUrl: 'https://automationexercise.com',
     specPattern: 'cypress/e2e/**/*.cy.ts',
     viewportWidth: 1280,
     viewportHeight: 720,
