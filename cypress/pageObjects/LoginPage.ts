@@ -38,7 +38,7 @@ export class LoginPage {
   }
 
   get emailExistsError() {
-    return cy.get('.signup-form form p[style="color: red;"]').should('exist');
+    return cy.get('.signup-form form p[style="color: red;"]');
   }
 
   // --- Actions ---
@@ -71,14 +71,14 @@ export class LoginPage {
   verifyLoginErrorVisible() {
     this.loginError
       .should('be.visible')
-      .and('contain.text', 'Your email or password is incorrect!');
-    cy.log('Login error message is visible');
+      .and('have.text', 'Your email or password is incorrect!');
+    cy.log('Login error message is visible and correct.');
   }
 
   verifyEmailExistsErrorVisible() {
-    cy.get('.signup-form form p[style="color: red;"]')
+    this.emailExistsError
       .should('be.visible')
-      .and('contain.text', 'Email Address already exist!');
-    cy.log('Email already exists error message is visible');
+      .and('have.text', 'Email Address already exist!');
+    cy.log('Email already exists error message is visible and correct.');
   }
 } 

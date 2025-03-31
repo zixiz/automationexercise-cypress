@@ -1,0 +1,27 @@
+{
+  "validUser": {
+    "name": "Fixture User TC1",
+    "email": "fixture_user_tc1@test.com",
+    "password": "fixturePassword123"
+  },
+  "invalidUser": {
+    "email": "invalid@test.com",
+    "password": "wrongpassword"
+  },
+  "registrationDetails": {
+    "title": "Mr",
+    "day": "21",
+    "month": "March",
+    "year": "1992",
+    "firstName": "FixtureFirstName",
+    "lastName": "FixtureLastName",
+    "company": "FixtureCompany LLC",
+    "address1": "456 Fixture Ave",
+    "address2": "Suite 100",
+    "country": "Canada",
+    "state": "Ontario",
+    "city": "FixtureCity",
+    "zipcode": "K1A 0B1",
+    "mobileNumber": "9876543210"
+  }
+}

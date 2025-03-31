@@ -1,5 +1,10 @@
 /// <reference types="cypress" />
 
+import { SignupPage } from '../pageObjects/SignupPage';
+import { LoginPage } from '../pageObjects/LoginPage';
+import { AccountCreatedPage } from '../pageObjects/AccountCreatedPage';
+import { HomePage } from '../pageObjects/HomePage';
+
 // Custom command for login
 Cypress.Commands.add('login', (email: string, password: string) => {
   cy.session([email, password], () => {
@@ -94,4 +99,60 @@ declare global {
       isInViewport(): Chainable<void>;
     }
   }
-} 
+}
+
+Cypress.Commands.add('ensureUserExists', (userData: UserData) => {
+    const loginPage = new LoginPage();
+    const signupPage = new SignupPage();
+    const accountCreatedPage = new AccountCreatedPage();
+    const homePage = new HomePage();
+
+    cy.log(`Attempting to ensure user exists: ${userData.email}`);
+
+    cy.visit('/login');
+    loginPage.verifyNewUserSignupVisible();
+
+    loginPage.enterSignupName(userData.name);
+    loginPage.enterSignupEmail(userData.email);
+    loginPage.signupButton.click();
+
+    cy.get('body').then($body => {
+        if ($body.find('form[action="/signup"] p[style="color: red;"]').length > 0) {
+            cy.log('User already exists, proceeding without registration.');
+            cy.visit('/login');
+            return cy.wrap(userData);
+        } else {
+            cy.log('User does not exist, registering...');
+            signupPage.verifyEnterAccountInfoVisible();
+
+            signupPage.selectTitle(userData.title);
+            signupPage.enterPassword(userData.password);
+            signupPage.selectDateOfBirth(userData.day, userData.month, userData.year);
+            signupPage.checkNewsletter();
+            signupPage.checkSpecialOffers();
+            signupPage.fillAddressDetails({
+                firstName: userData.firstName,
+                lastName: userData.lastName,
+                company: userData.company,
+                address1: userData.address1,
+                address2: userData.address2,
+                country: userData.country,
+                state: userData.state,
+                city: userData.city,
+                zipcode: userData.zipcode,
+                mobileNumber: userData.mobileNumber,
+            });
+
+            signupPage.clickCreateAccountButton();
+
+            accountCreatedPage.verifyAccountCreatedVisible();
+            accountCreatedPage.clickContinueButton();
+
+            homePage.verifyLoggedInAs(userData.name);
+            homePage.clickLogout();
+            loginPage.verifyLoginPageVisible();
+            cy.log('User registered and logged out.');
+            return cy.wrap(userData);
+        }
+    });
+}); 
