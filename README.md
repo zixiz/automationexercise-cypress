@@ -95,9 +95,21 @@ automationexercise-cypress/
    npx cypress run
    ```
 
-3. Run specific test file:
+3. Run All Tests Headlessly (Specific Browser):
+
    ```bash
-   npx cypress run --spec "cypress/e2e/auth/login.cy.ts"
+   npx cypress run --browser chrome
+   ```
+
+4. Run All Tests Headlessly (Specific Browser):
+
+   ```bash
+   npx cypress run --spec "cypress/e2e/product/productView.cy.ts" --browser chrome
+   ```
+
+5. Run Tests in a Specific Folder Headlessly:
+   ```bash
+   npx cypress run --spec "cypress/e2e/auth/*" --browser chrome
    ```
 
 ## 📝 Test Cases
@@ -138,5 +150,21 @@ automationexercise-cypress/
    - Navigates to test cases page
    - Verifies successful navigation
 
-8. **TC8: Product Search**
-   - Verifies the product search functionality.
+8. **TC8: Verify All Products and product detail page**
+
+   - Verifies product detail page.
+
+9. **TC9: Search Product**
+
+   - Navigates to the Products page.
+   - Verifies that all displayed products contain the search term.
+
+10. **TC10: Verify Subscription in home page**
+
+- Verifies the 'SUBSCRIPTION' text in home page.
+- Verifies the success message appears upon clicking subscription.
+
+10. **TC11: Verify Subscription in Cart page**
+
+- Verifies the 'SUBSCRIPTION' text in cart page.
+- Verifies the success message appears upon clicking subscription.
