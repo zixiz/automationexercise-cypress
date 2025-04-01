@@ -33,6 +33,35 @@ export class HomePage {
     return cy.get('.shop-menu a[href="/test_cases"]');
   }
 
+  get productsButton() {
+    return cy.get('.shop-menu a[href="/products"]');
+  }
+
+  get cartButton() {
+    return cy.get('.shop-menu a[href="/view_cart"]');
+  }
+
+  // --- Footer Subscription Selectors ---
+  get footer() {
+    return cy.get('#footer');
+  }
+
+  get subscriptionHeading() {
+    return this.footer.find('.single-widget h2').contains('Subscription');
+  }
+
+  get subscriptionEmailInput() {
+    return this.footer.find('#susbscribe_email');
+  }
+
+  get subscriptionSubmitButton() {
+    return this.footer.find('#subscribe');
+  }
+
+  get subscriptionSuccessMessage() {
+    return cy.get('#success-subscribe .alert-success.alert');
+  }
+
   // --- Actions ---
   verifyHomePageVisible() {
     cy.url().should('eq', Cypress.config().baseUrl + '/');
@@ -68,5 +97,43 @@ export class HomePage {
   navigateToTestCases() {
     this.testCasesButton.click();
     cy.log('Clicked Test Cases button');
+  }
+
+  navigateToProducts() {
+    this.productsButton.click();
+    cy.log('Clicked Products button');
+  }
+
+  navigateToCart() {
+    this.cartButton.click();
+    cy.log('Clicked Cart button');
+  }
+
+  // --- Footer Subscription Actions ---
+  scrollToFooter() {
+    this.footer.scrollIntoView();
+    cy.log('Scrolled down to the footer.');
+  }
+
+  verifySubscriptionHeadingVisible() {
+    this.subscriptionHeading.should('be.visible');
+    cy.log('Verified "SUBSCRIPTION" heading is visible in the footer.');
+  }
+
+  enterSubscriptionEmail(email: string) {
+    this.subscriptionEmailInput.type(email);
+    cy.log(`Entered subscription email: ${email}`);
+  }
+
+  submitSubscription() {
+    this.subscriptionSubmitButton.click();
+    cy.log('Clicked subscription submit button.');
+  }
+
+  verifySubscriptionSuccess() {
+    this.subscriptionSuccessMessage
+      .should('be.visible', { timeout: 10000 })
+      .and('contain.text', 'You have been successfully subscribed!');
+    cy.log('Verified subscription success message.');
   }
 } 

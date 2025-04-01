@@ -13,7 +13,9 @@ This project contains automated test cases for [Automation Exercise](https://aut
   - Login/Logout (TC2, TC3, TC4)
   - Contact Us Form (TC6)
   - Test Cases Page Navigation (TC7)
-  - Products Page (TC8)
+  - Product Listing & Details (TC8)
+  - Product Search (TC9)
+  - Footer Subscription (Homepage - TC10, Cart Page - TC11)
 
 ## 📋 Prerequisites
 
@@ -37,26 +39,46 @@ This project contains automated test cases for [Automation Exercise](https://aut
 ## 📁 Project Structure
 
 ```
-cypress/
-├── e2e/                    # Test files
-│   ├── auth/              # Authentication tests
-│   │   ├── login.cy.ts    # Login/Logout tests
-│   │   └── registration.cy.ts  # Registration tests
-│   └── common/            # Common feature tests
-│       ├── contactUs.cy.ts    # Contact form tests
-│       └── navigation.cy.ts   # Navigation tests
-├── fixtures/              # Test data
-│   ├── testUpload.txt    # Upload test file
-│   └── userData.json     # User test data
-├── pageObjects/          # Page Object Models
-│   ├── HomePage.ts
-│   ├── LoginPage.ts
-│   ├── SignupPage.ts
-│   ├── ContactUsPage.ts
-│   └── TestCasesPage.ts
-└── support/              # Support files
-    ├── commands.ts       # Custom commands
-    └── e2e.ts           # Configuration
+automationexercise-cypress/
+├── cypress/
+│   ├── e2e/                 # Test spec files (.cy.ts)
+│   │   ├── auth/            # Authentication tests
+│   │   │   ├── login.cy.ts    # Login/Logout tests (TC2, TC3, TC4)
+│   │   │   └── registration.cy.ts  # Registration tests (TC1, TC5)
+│   │   ├── common/          # Tests for common functionalities
+│   │   │   ├── contactUs.cy.ts    # Contact form tests (TC6)
+│   │   │   ├── navigation.cy.ts   # Navigation tests (TC7)
+│   │   │   └── subscription.cy.ts # Subscription tests (TC10, TC11)
+│   │   └── product/         # Product related tests
+│   │       └── productView.cy.ts # Product view/search tests (TC8, TC9)
+│   ├── fixtures/            # Test data files
+│   │   ├── testUpload.txt    # Sample file for upload tests
+│   │   └── userData.json     # User test data (valid, invalid, registration details)
+│   ├── pageObjects/         # Page Object Model classes
+│   │   ├── AccountCreatedPage.ts
+│   │   ├── AccountDeletedPage.ts
+│   │   ├── CartPage.ts          # (Basic structure for Cart page verification)
+│   │   ├── ContactUsPage.ts
+│   │   ├── HomePage.ts
+│   │   ├── LoginPage.ts
+│   │   ├── ProductDetailsPage.ts # Product Details page elements
+│   │   ├── ProductsPage.ts       # All Products / Searched Products page elements
+│   │   ├── SignupPage.ts
+│   │   └── TestCasesPage.ts
+│   ├── support/             # Reusable code, custom commands, plugins
+│   │   ├── commands.ts      # Custom Cypress commands (ensureUserExists, login, getByDataQa)
+│   │   ├── e2e.ts           # Runs before every spec file (imports commands)
+│   │   └── index.d.ts       # TypeScript definitions for custom commands
+│   ├── downloads/           # Downloaded files (add to .gitignore)
+│   ├── screenshots/         # Screenshots on failure (add to .gitignore)
+│   └── videos/              # Videos of test runs (add to .gitignore)
+├── node_modules/            # Project dependencies (add to .gitignore)
+├── .gitignore               # Specifies intentionally untracked files
+├── cypress.config.ts        # Cypress configuration file
+├── package.json             # Project metadata and dependencies
+├── package-lock.json        # Or yarn.lock
+├── README.md                # This file
+└── tsconfig.json            # TypeScript compiler options
 ```
 
 ## 🧪 Running Tests
@@ -115,3 +137,6 @@ cypress/
 
    - Navigates to test cases page
    - Verifies successful navigation
+
+8. **TC8: Product Search**
+   - Verifies the product search functionality.
