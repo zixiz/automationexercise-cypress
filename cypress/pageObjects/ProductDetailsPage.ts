@@ -29,6 +29,25 @@ export class ProductDetailsPage {
     return this.productDetailsContainer.find('.product-information p b').contains('Brand:').parent();
   }
 
+  get quantityInput() {
+    // Based on HTML: <input type="number" name="quantity" id="quantity" ...>
+    return this.productDetailsContainer.find('#quantity');
+  }
+
+  get addToCartButton() {
+      // Based on HTML: <button type="button" class="btn btn-default cart">...</button>
+      // Making it more specific to the button within the span containing price/quantity
+      return this.productDetailsContainer.find('.product-information span button.cart');
+  }
+
+  // Selectors for the "Added!" Modal (can reuse from ProductsPage or define here)
+  get addedToCartModal() {
+      return cy.get('#cartModal');
+  }
+  getViewCartLinkInModal() {
+      return this.addedToCartModal.find('a[href="/view_cart"]');
+  }
+
   // --- Actions ---
   verifyProductDetailsPageVisible() {
     cy.url().should('include', '/product_details/');
@@ -44,5 +63,21 @@ export class ProductDetailsPage {
     this.productCondition.should('be.visible').and('contain.text', 'Condition:');
     this.productBrand.should('be.visible').and('contain.text', 'Brand:');
     cy.log('Verified product name, category, price, availability, condition, and brand are visible.');
+  }
+
+  setQuantity(quantity: number) {
+    this.quantityInput.clear().type(quantity.toString());
+    cy.log(`Set quantity to ${quantity}`);
+  }
+
+  clickAddToCart() {
+      this.addToCartButton.click();
+      cy.log('Clicked Add to cart button on product details page.');
+  }
+
+  clickViewCartInModal() {
+      this.addedToCartModal.should('be.visible');
+      this.getViewCartLinkInModal().should('be.visible').click();
+      cy.log('Clicked View Cart link in modal.');
   }
 } 

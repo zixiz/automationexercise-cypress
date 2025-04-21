@@ -30,6 +30,20 @@ export class ProductsPage {
     return cy.contains('.features_items h2.title', 'Searched Products');
   }
 
+    // Selectors for the "Added!" Modal
+    get addedToCartModal() {
+        return cy.get('#cartModal');
+    }
+    get continueShoppingButton() {
+        return this.addedToCartModal.find('button.close-modal');
+        // Based on HTML: <button class="btn btn-success close-modal btn-block" data-dismiss="modal">Continue Shopping</button>
+    }
+    getViewCartLinkInModal() {
+        // Based on HTML: <p class="text-center"><a href="/view_cart"><u>View Cart</u></a></p>
+        return this.addedToCartModal.find('a[href="/view_cart"]');
+    }
+  
+
   // --- Actions ---
   verifyAllProductsPageVisible() {
     cy.url().should('include', '/products');
@@ -69,4 +83,80 @@ export class ProductsPage {
     });
     cy.log(`Verified all displayed products contain "${searchTerm}"`);
   }
+
+  getAddToCartButton(productId: number | string) {
+    // Targets <a data-product-id="X" ...> within .productinfo
+    return cy.get(`.productinfo a.add-to-cart[data-product-id="${productId}"]`);
+  }
+
+  // Selector targeting a specific product item container by its index (0-based)
+  getProductItemByIndex(index: number) {
+      return this.allProductItems.eq(index);
+  }
+
+  // Get product name from a specific product item
+  getProductNameByIndex(index: number) {
+      return this.getProductItemByIndex(index).find('.productinfo p');
+  }
+
+  // Get product price from a specific product item
+  getProductPriceByIndex(index: number) {
+      return this.getProductItemByIndex(index).find('.productinfo h2');
+  }
+
+  /**
+    * Adds a product to the cart by its index (0-based) on the page.
+    * Waits for and interacts with the 'Added!' modal.
+    * Clicks the 'Continue Shopping' button in the modal.
+    * @param index The zero-based index of the product to add.
+    * @returns Chainable Cypress object for further chaining.
+    */
+    addProductToCartByIndexAndContinue(index: number) {
+      cy.log(`Adding product at index ${index} to cart...`);
+      // Find the specific product item
+      this.getProductItemByIndex(index).within(() => {
+      // Find the add-to-cart button within this product and click it
+      cy.get('a.add-to-cart').first().click(); // Using first() just in case overlay exists but info one is primary
+    });
+
+        // Wait for the modal and click Continue Shopping
+        this.addedToCartModal.should('be.visible');
+        this.continueShoppingButton.should('be.visible').click();
+        // Optionally wait for modal to hide
+        this.addedToCartModal.should('not.be.visible');
+        cy.log(`Product at index ${index} added and continued shopping.`);
+    }
+
+     /**
+     * Adds a product to the cart by its index (0-based) on the page.
+     * Waits for and interacts with the 'Added!' modal.
+     * Clicks the 'View Cart' link in the modal.
+     * @param index The zero-based index of the product to add.
+     * @returns Chainable Cypress object for further chaining.
+     */
+    addProductToCartByIndexAndViewCart(index: number) {
+         cy.log(`Adding product at index ${index} and viewing cart...`);
+         this.getProductItemByIndex(index).within(() => {
+            cy.get('a.add-to-cart').first().click();
+        });
+         this.addedToCartModal.should('be.visible');
+         this.getViewCartLinkInModal().should('be.visible').click();
+         cy.log(`Product at index ${index} added and clicked View Cart.`);
+    }
+
+     /**
+     * Retrieves the name and price of a product by its index.
+     * @param index The zero-based index of the product.
+     * @returns Cypress Chainable yielding an object { name: string, price: string }
+     */
+    getProductDetailsByIndex(index: number): Cypress.Chainable<{ name: string; price: string }> {
+        const details = { name: '', price: '' };
+        return this.getProductNameByIndex(index).invoke('text').then(name => {
+            details.name = name.trim();
+            return this.getProductPriceByIndex(index).invoke('text').then(price => {
+                details.price = price.trim();
+                return cy.wrap(details);
+            });
+        });
+    }
 } 

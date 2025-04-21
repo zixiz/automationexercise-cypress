@@ -23,5 +23,12 @@
     "city": "FixtureCity",
     "zipcode": "K1A 0B1",
     "mobileNumber": "9876543210"
+  },
+  "paymentDetails": {
+    "nameOnCard": "Test Card User",
+    "cardNumber": "4100000000000000",
+    "cvc": "123",
+    "expiryMonth": "05",
+    "expiryYear": "2028"
   }
 }

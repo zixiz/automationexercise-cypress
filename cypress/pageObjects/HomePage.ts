@@ -62,6 +62,15 @@ export class HomePage {
     return cy.get('#success-subscribe .alert-success.alert');
   }
 
+  getViewProductLink(productId: number | string) {
+    return cy.get(`.features_items a[href="/product_details/${productId}"]`);
+  }
+
+  getAddToCartButtonForProduct(productId: number | string) {
+    // Targets the 'Add to cart' button within a product's feature item wrapper on the homepage
+    return cy.get(`.features_items div.product-image-wrapper:has(a[data-product-id="${productId}"])`).find('a.add-to-cart');
+  }
+
   // --- Actions ---
   verifyHomePageVisible() {
     cy.url().should('eq', Cypress.config().baseUrl + '/');
@@ -135,5 +144,15 @@ export class HomePage {
       .should('be.visible', { timeout: 10000 })
       .and('contain.text', 'You have been successfully subscribed!');
     cy.log('Verified subscription success message.');
+  }
+
+  navigateToProductDetails(productId: number | string) {
+    this.getViewProductLink(productId).click();
+    cy.log(`Navigated to product details page for product ID ${productId}`);
+  }
+
+  addProductToCartFromHome(productId: number | string) {
+    this.getAddToCartButtonForProduct(productId).click({ force: true });
+    cy.log(`Added product ID ${productId} to cart from homepage (quick add).`);
   }
 } 
