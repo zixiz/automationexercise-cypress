@@ -21,10 +21,8 @@ describe('Checkout Process', () => {
     const paymentPage = new PaymentPage();
     const accountDeletedPage = new AccountDeletedPage();
 
-    // No need for 'let paymentData' here anymore
 
     it('TC14: Place Order - Register while Checkout', () => {
-        // --- Setup: Generate unique user data ---
         const uniqueEmail = `checkout_reg_${Date.now()}@test.com`;
         const userData = {
             name: faker.person.firstName(),
@@ -47,30 +45,19 @@ describe('Checkout Process', () => {
         };
         cy.log(`[TC14 SETUP] User Data: ${JSON.stringify(userData.email)}`);
 
-        // Load fixture data *inside* the test or use cy.then() before use
         cy.fixture('userData').then(fixture => {
-            const paymentData = fixture.paymentDetails; // Get payment data here
-            expect(paymentData).to.not.be.undefined; // Verify it loaded
+            const paymentData = fixture.paymentDetails; 
+            expect(paymentData).to.not.be.undefined; 
 
-            // --- Test Steps ---
-            // 1. Launch browser (Implicit)
-            // 2. Navigate to url
             cy.visit('/');
-            // 3. Verify home page
             homePage.verifyHomePageVisible();
-            // 4. Add products
             homePage.navigateToProducts();
             productsPage.verifyAllProductsPageVisible();
             productsPage.addProductToCartByIndexAndContinue(0);
-            // 5. Click Cart
             homePage.navigateToCart();
-            // 6. Verify Cart page
             cartPage.verifyCartPageVisible();
-            // 7. Proceed To Checkout
             cartPage.clickProceedToCheckout();
-            // 8. Click Register / Login on modal
             cartPage.checkoutModalRegisterLoginButton.should('be.visible').click();
-            // 9. Fill registration
             cy.log('[TC14] Starting registration during checkout...');
             loginPage.enterSignupName(userData.name);
             loginPage.enterSignupEmail(userData.email);
@@ -83,44 +70,32 @@ describe('Checkout Process', () => {
             signupPage.checkSpecialOffers();
             signupPage.fillAddressDetails(userData);
             signupPage.clickCreateAccountButton();
-            // 10. Verify Account Created
             accountCreatedPage.verifyAccountCreatedVisible();
             accountCreatedPage.clickContinueButton();
-            // 11. Verify Logged In
             homePage.verifyLoggedInAs(userData.name);
-            // 12. Click Cart
             homePage.navigateToCart();
             cartPage.verifyCartPageVisible();
-            // 13. Proceed To Checkout
             cartPage.clickProceedToCheckout();
-            // 14. Verify Checkout Page
             checkoutPage.verifyCheckoutPageVisible();
             checkoutPage.reviewOrderSection.should('be.visible');
-            // 15. Enter comment & Place Order
             const orderComment = `Test order comment - ${new Date().toISOString()}`;
             checkoutPage.enterOrderComment(orderComment);
             checkoutPage.clickPlaceOrder();
 
             // --- Payment Page ---
             paymentPage.verifyPaymentPageVisible();
-            // 16. Enter payment details (paymentData is now guaranteed to be defined within this .then block)
             paymentPage.fillPaymentDetails(paymentData);
-            // 17. Click Pay and Confirm Order
             paymentPage.clickPayAndConfirmOrder();
-            // 18. Verify success message
             paymentPage.verifyOrderSuccessMessageVisible();
 
-            // --- Cleanup ---
-            // 19. Click Delete Account
-            // Ensure header is visible before trying to click delete
-             homePage.deleteAccountButton.should('be.visible', {timeout: 10000}).click();
-            // 20. Verify Account Deleted
+
+            homePage.deleteAccountButton.should('be.visible', {timeout: 10000}).click();
             accountDeletedPage.verifyAccountDeletedVisible();
             accountDeletedPage.clickContinueButton();
 
             cy.log('[TC14] Completed successfully.');
-        }); // End of cy.fixture().then()
+        }); 
     });
 
-    // Add TC15, TC16 etc. here later
+
 });

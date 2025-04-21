@@ -30,17 +30,14 @@ export class ProductDetailsPage {
   }
 
   get quantityInput() {
-    // Based on HTML: <input type="number" name="quantity" id="quantity" ...>
     return this.productDetailsContainer.find('#quantity');
   }
 
   get addToCartButton() {
-      // Based on HTML: <button type="button" class="btn btn-default cart">...</button>
-      // Making it more specific to the button within the span containing price/quantity
-      return this.productDetailsContainer.find('.product-information span button.cart');
+    return this.productDetailsContainer.find('.product-information span button.cart');
   }
 
-  // Selectors for the "Added!" Modal (can reuse from ProductsPage or define here)
+
   get addedToCartModal() {
       return cy.get('#cartModal');
   }

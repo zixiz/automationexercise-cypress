@@ -24,20 +24,11 @@ export class PaymentPage {
       return cy.getByDataQa('pay-button');
   }
   get orderSuccessMessage() {
-      // Based on HTML: <div class="alert-success alert">Your order has been placed successfully!</div>
-      // Selector might need refinement based on actual page structure after payment success
-      // Let's assume it might be within the main section or near the form initially.
-       return cy.contains('.col-sm-9.col-sm-offset-1', 'Your order has been placed successfully!', { timeout: 20000 }); // Increased timeout for payment processing
-       // Fallback if the above is too specific:
-       // return cy.get('#success_message > .alert-success', { timeout: 20000 });
+       return cy.contains('.col-sm-9.col-sm-offset-1', 'Your order has been placed successfully!', { timeout: 20000 });
   }
 
   get orderPlacedSuccessMessage() {
-    // Based on common patterns, let's target the heading first
-    // This selector looks for the specific "Order Placed!" text in a bold tag within an h2.title
     return cy.contains('h2.title b', 'Order Placed!', { timeout: 20000 });
-    // We will verify the "Congratulations!" message separately if needed,
-    // as it might be in a different element (e.g., a <p> tag).
   }
 
   get congratulationsMessage() {
@@ -75,7 +66,7 @@ export class PaymentPage {
         .and('have.text', expectedHeading);
     this.congratulationsMessage
         .should('be.visible')
-        .and('contain.text', expectedCongratsMessage); // Use contain for the paragraph
+        .and('contain.text', expectedCongratsMessage); 
 
     cy.log('Verified order success messages.');
   }

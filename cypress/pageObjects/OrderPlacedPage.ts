@@ -3,10 +3,7 @@ export class OrderPlacedPage {
 
   // --- Selectors ---
   get orderPlacedHeadingOrMessage() {
-       // Example selector - adjust based on actual page content
-       return cy.contains('[data-qa="order-placed"] b', 'Order Placed!');
-       // Or target the specific success paragraph if needed:
-       // return cy.contains('p', 'Congratulations! Your order has been confirmed!');
+      return cy.contains('[data-qa="order-placed"] b', 'Order Placed!');
   }
 
   get downloadInvoiceButton() {
@@ -14,13 +11,12 @@ export class OrderPlacedPage {
   }
 
    get continueButton() {
-       // Find the continue button on this page if it exists
        return cy.contains('a', 'Continue');
    }
 
   // --- Actions ---
   verifyOrderPlacedPageVisible() {
-       cy.url().should('include', '/order_placed'); // Adjust URL if needed
+       cy.url().should('include', '/order_placed'); 
        this.orderPlacedHeadingOrMessage.should('be.visible');
        cy.log('Verified navigation to Order Placed page.');
   }

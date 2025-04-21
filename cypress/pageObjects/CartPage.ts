@@ -11,58 +11,46 @@ export class CartPage {
   }
 
   get proceedToCheckoutButton() {
-    // Based on HTML: <a class="btn btn-default check_out">Proceed To Checkout</a>
-    // Using contains for robustness as the class might be shared
-    return cy.contains('a.check_out', 'Proceed To Checkout');
+        return cy.contains('a.check_out', 'Proceed To Checkout');
     }
 
-    // Checkout Modal Selectors (when not logged in)
     get checkoutModal() {
         return cy.get('#checkoutModal');
     }
 
     get registerLoginButtonInModal() {
-        // Based on HTML in modal: <p class="text-center"><a href="/login"><u>Register / Login</u></a></p>
         return this.checkoutModal.find('a[href="/login"]');
     }
     get checkoutModalRegisterLoginLink() {
-        // Based on HTML: <p class="text-center"><a href="/login"><u>Register / Login</u></a></p>
        return this.checkoutModal.find('.modal-body a[href="/login"]');
    }
 
     get checkoutModalRegisterLoginButton() {
-        // Based on HTML: <p class="text-center"><a href="/login"><u>Register / Login</u></a></p>
         return this.checkoutModal.find('.modal-body a[href="/login"]');
     }
 
-  // Get a specific row in the cart table by product ID
   getCartRow(productId: number | string) {
       return this.cartTableBody.find(`tr#product-${productId}`);
   }
 
-  // Get description cell within a specific row
   getProductDescription(productId: number | string) {
       return this.getCartRow(productId).find('.cart_description h4 a');
   }
 
-  // Get price cell within a specific row
   getProductPrice(productId: number | string) {
       return this.getCartRow(productId).find('.cart_price p');
   }
 
-  // Get quantity cell within a specific row
   getProductQuantity(productId: number | string) {
-      // Based on HTML: <td class="cart_quantity"><button class="disabled">1</button></td>
       return this.getCartRow(productId).find('.cart_quantity button');
   }
 
-  // Get total cell within a specific row
   getProductTotal(productId: number | string) {
       return this.getCartRow(productId).find('.cart_total p');
   }
 
   get allCartRows() {
-      return this.cartTableBody.find('tr[id^="product-"]'); // Select rows whose ID starts with 'product-'
+      return this.cartTableBody.find('tr[id^="product-"]'); 
   }
 
   // --- Actions ---
