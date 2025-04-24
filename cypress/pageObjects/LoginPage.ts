@@ -1,4 +1,3 @@
-// Page Object Model for the Login page
 export class LoginPage {
   // --- Selectors ---
   get newUserSignupHeading() {

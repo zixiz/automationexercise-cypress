@@ -12,7 +12,7 @@ describe('Subscription Functionality', () => {
   });
 
   it('TC10: should subscribe successfully from the homepage footer', () => {
-    const subscriberEmail = faker.internet.email(); // Generate a random email
+    const subscriberEmail = faker.internet.email();
     cy.log(`[TC10] Testing subscription with email: ${subscriberEmail}`);
 
     homePage.scrollToFooter();
@@ -27,7 +27,7 @@ describe('Subscription Functionality', () => {
   });
 
   it('TC11: should subscribe successfully from the cart page footer', () => {
-    const subscriberEmail = faker.internet.email(); // Generate a unique email
+    const subscriberEmail = faker.internet.email(); 
     cy.log(`[TC11] Testing subscription with email: ${subscriberEmail}`);
 
     homePage.navigateToCart();

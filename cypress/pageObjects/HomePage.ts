@@ -1,4 +1,10 @@
-// Page Object Model for the Home page
+interface RecommendedProductInfo {
+  id: string;
+  name: string;
+  price: string;
+}
+
+
 export class HomePage {
   visit() {
     cy.visit('/');
@@ -10,7 +16,7 @@ export class HomePage {
   }
 
   get signupLoginButton() {
-    return cy.get('a[href="/login"]');
+    return cy.get('.shop-menu a[href="/login"]');
   }
 
   get loggedInAs() {
@@ -41,7 +47,18 @@ export class HomePage {
     return cy.get('.shop-menu a[href="/view_cart"]');
   }
 
-  // --- Footer Subscription Selectors ---
+  get categorySidebar() {
+    return cy.get('.left-sidebar');
+  }
+
+  get categoryHeading() {
+      return this.categorySidebar.contains('h2', 'Category');
+  }
+
+  get categoryPanelGroup() {
+      return cy.get('#accordian'); 
+  }
+
   get footer() {
     return cy.get('#footer');
   }
@@ -62,6 +79,29 @@ export class HomePage {
     return cy.get('#success-subscribe .alert-success.alert');
   }
 
+  get recommendedItemsSection() {
+    return cy.get('.recommended_items');
+  }
+
+  get recommendedItemsTitle() {
+    return this.recommendedItemsSection.find('h2.title.text-center').contains('recommended items', { matchCase: false });
+  }
+
+  get recommendedProductItems() {
+    return this.recommendedItemsSection.find('.item.active .col-sm-4');
+  }
+
+  get addedToCartModal() {
+    return cy.get('#cartModal');
+  }
+  getViewCartLinkInModal() {
+      return this.addedToCartModal.find('a[href="/view_cart"]');
+  }
+
+  getRecommendedItemAddToCartButton(index: number) {
+    return this.recommendedProductItems.eq(index).find('.productinfo a.add-to-cart');
+  }
+
   getViewProductLink(productId: number | string) {
     return cy.get(`.features_items a[href="/product_details/${productId}"]`);
   }
@@ -69,6 +109,17 @@ export class HomePage {
   getAddToCartButtonForProduct(productId: number | string) {
     // Targets the 'Add to cart' button within a product's feature item wrapper on the homepage
     return cy.get(`.features_items div.product-image-wrapper:has(a[data-product-id="${productId}"])`).find('a.add-to-cart');
+  }
+
+  getCategoryLink(categoryName: 'Women' | 'Men' | 'Kids') {
+    // Targets the <a> tag that contains the category name and has the data-toggle attribute
+    return this.categoryPanelGroup.find(`.panel-title a[href="#${categoryName}"]`);
+  }
+
+  getSubCategoryLink(categoryName: 'Women' | 'Men' | 'Kids', subCategoryName: string) {
+    // Finds the panel body for the category, then the link inside it
+    return this.categoryPanelGroup.find(`#${categoryName}`).find('.panel-body a').contains(subCategoryName);
+    // Using contains() is good here as the subCategoryName might have extra spaces (e.g., "Dress ")
   }
 
   // --- Actions ---
@@ -154,5 +205,60 @@ export class HomePage {
   addProductToCartFromHome(productId: number | string) {
     this.getAddToCartButtonForProduct(productId).click({ force: true });
     cy.log(`Added product ID ${productId} to cart from homepage (quick add).`);
+  }
+
+  verifyCategoriesVisible() {
+    this.categorySidebar.should('be.visible');
+    this.categoryHeading.should('be.visible');
+    // Check for at least one category panel
+    this.categoryPanelGroup.find('.panel').should('have.length.greaterThan', 0);
+    cy.log('Categories sidebar is visible.');
+  }
+
+  clickCategory(categoryName: 'Women' | 'Men' | 'Kids') {
+      this.getCategoryLink(categoryName).click();
+      cy.log(`Clicked category: ${categoryName}`);
+  }
+
+  clickSubCategory(categoryName: 'Women' | 'Men' | 'Kids', subCategoryName: string) {
+      // Ensure the main category is expanded first (important if not already open)
+      this.clickCategory(categoryName); // Click the main category to ensure panel is open
+      this.getSubCategoryLink(categoryName, subCategoryName).click();
+      cy.log(`Clicked sub-category: ${subCategoryName} under ${categoryName}`);
+  }
+
+  verifyRecommendedItemsVisible() {
+    this.recommendedItemsSection.should('be.visible');
+    this.recommendedItemsTitle.should('be.visible');
+    // Check if there are actually items displayed
+    this.recommendedProductItems.should('have.length.greaterThan', 0);
+    cy.log('Verified "RECOMMENDED ITEMS" section is visible and contains items.');
+  }
+
+  getRecommendedItemDetailsByIndex(index: number): Cypress.Chainable<RecommendedProductInfo> {
+    const details: RecommendedProductInfo = { id: '', name: '', price: '' };
+    cy.log(`Getting details for recommended item at index ${index}`);
+      return this.recommendedProductItems.eq(index).within(() => {
+             cy.get('.productinfo a.add-to-cart').invoke('attr', 'data-product-id').then(id => {
+                 details.id = id ?? `unknown-recommended-${index}`; 
+             });
+             cy.get('.productinfo p').invoke('text').then(name => {
+                 details.name = name.trim();
+             });
+             cy.get('.productinfo h2').invoke('text').then(price => {
+                 details.price = price.trim();
+             });
+         }).then(() => cy.wrap(details)); 
+     }
+
+  addRecommendedItemToCartAndViewCart(index: number) {
+    cy.log(`Adding recommended item at index ${index} to cart and viewing cart...`);
+    this.getRecommendedItemAddToCartButton(index)
+        .should('be.visible') // Ensure interactable
+        .click();
+
+    this.addedToCartModal.should('be.visible', { timeout: 10000 });
+    this.getViewCartLinkInModal().should('be.visible').click();
+    cy.log('Clicked View Cart link in modal.');
   }
 } 

@@ -1,4 +1,3 @@
-// cypress/pageObjects/OrderPlacedPage.ts
 export class OrderPlacedPage {
 
   // --- Selectors ---

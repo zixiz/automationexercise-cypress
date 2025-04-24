@@ -1,4 +1,3 @@
-// Page Object Model for the Test Cases page
 export class TestCasesPage {
   // --- Selectors ---
   get testCasesHeading() {

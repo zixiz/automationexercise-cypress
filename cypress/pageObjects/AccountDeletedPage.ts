@@ -1,4 +1,3 @@
-// Page Object Model for the Account Deleted page
 export class AccountDeletedPage {
   // --- Selectors ---
   get accountDeletedHeading() {

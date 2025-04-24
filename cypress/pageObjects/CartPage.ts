@@ -1,4 +1,3 @@
-// cypress/pageObjects/CartPage.ts
 export class CartPage {
 
   // --- Selectors ---
@@ -52,6 +51,21 @@ export class CartPage {
   get allCartRows() {
       return this.cartTableBody.find('tr[id^="product-"]'); 
   }
+
+    getDeleteButtonForRow(productId: number | string) {
+        return this.getCartRow(productId).find(`a.cart_quantity_delete[data-product-id="${productId}"]`);
+    }
+
+    get cartIsEmptyMessage() {
+        return cy.get('#empty_cart').contains('Cart is empty!');
+    }
+
+    get anyDeleteButton() {
+        return cy.get('#cart_info_table a.cart_quantity_delete');
+    }
+    get emptyCartMessage() {
+         return cy.get('#empty_cart').find('p.text-center > b').contains('Cart is empty!');
+     }
 
   // --- Actions ---
   verifyCartPageVisible() {
@@ -107,5 +121,46 @@ export class CartPage {
         this.checkoutModal.should('be.visible');
         this.registerLoginButtonInModal.should('be.visible').click();
         cy.log('Clicked "Register / Login" button in checkout modal.');
-    }  
+    }
+
+    removeProductFromCart(productId: number | string) {
+        this.getDeleteButtonForRow(productId).should('be.visible').click();
+        cy.log(`Clicked delete button for product ID ${productId}.`);
+    }
+
+    verifyProductNotInCart(productId: number | string) {
+        this.getCartRow(productId).should('not.exist');
+        cy.log(`Verified product ID ${productId} is not present in the cart.`);
+    }
+
+    verifyCartIsEmpty() {
+        this.cartIsEmptyMessage.should('be.visible');
+        // Also verify no product rows exist
+        this.allCartRows.should('not.exist');
+        this.emptyCartMessage.should('be.visible');
+        cy.log('Verified cart is empty.');
+    }
+
+        emptyCart() {
+        cy.log('Attempting to empty the cart...');
+
+        const attemptDelete = () => {
+            cy.get('body').then($body => {
+                const deleteButtons = $body.find('#cart_info_table a.cart_quantity_delete');
+
+                if (deleteButtons.length > 0) {
+                    cy.log(`Items remaining: ${deleteButtons.length}. Clicking delete on the first.`);
+                    cy.wrap(deleteButtons.first()).click();
+                    cy.get('#cart_info_table a.cart_quantity_delete', { timeout: 10000 }) 
+                      .should('have.length.lessThan', deleteButtons.length);
+                    attemptDelete();
+                } else {
+                    cy.log('No more delete buttons found.');
+                }
+            });
+        };
+
+        attemptDelete();
+        this.verifyCartIsEmpty();
+    }
 }

@@ -1,4 +1,3 @@
-// cypress/pageObjects/PaymentPage.ts
 export class PaymentPage {
 
   // --- Selectors ---
@@ -32,7 +31,6 @@ export class PaymentPage {
   }
 
   get congratulationsMessage() {
-      // Selector for the "Congratulations!" paragraph
       return cy.contains('p', 'Congratulations! Your order has been confirmed!');
   }
 

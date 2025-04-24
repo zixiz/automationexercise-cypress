@@ -1,4 +1,3 @@
-// Page Object Model for the Product Details page
 export class ProductDetailsPage {
   // --- Selectors ---
   get productDetailsContainer() {
@@ -41,6 +40,32 @@ export class ProductDetailsPage {
   get addedToCartModal() {
       return cy.get('#cartModal');
   }
+
+  get writeYourReviewHeading() {
+    return cy.get('#reviews'); 
+  }
+
+  get reviewNameInput() {
+      return cy.get('#reviews #name'); 
+  }
+
+  get reviewEmailInput() {
+      return cy.get('#reviews #email');
+  }
+
+  get reviewTextArea() {
+      return cy.get('#reviews #review');
+  }
+
+  get reviewSubmitButton() {
+      return cy.get('#reviews #button-review');
+  }
+
+  get reviewSuccessMessage() {
+      return cy.get('#review-section .alert-success span');
+  }
+
+
   getViewCartLinkInModal() {
       return this.addedToCartModal.find('a[href="/view_cart"]');
   }
@@ -76,5 +101,33 @@ export class ProductDetailsPage {
       this.addedToCartModal.should('be.visible');
       this.getViewCartLinkInModal().should('be.visible').click();
       cy.log('Clicked View Cart link in modal.');
+  }
+
+  verifyReviewSectionVisible() {
+    this.writeYourReviewHeading.should('be.visible'); 
+    this.reviewNameInput.should('be.visible');
+    this.reviewEmailInput.should('be.visible');
+    this.reviewTextArea.should('be.visible');
+    this.reviewSubmitButton.should('be.visible');
+    cy.log('Verified "Write Your Review" section elements are visible.');
+  }
+
+  fillReviewDetails(name: string, email: string, review: string) {
+      this.reviewNameInput.type(name);
+      this.reviewEmailInput.type(email);
+      this.reviewTextArea.type(review);
+      cy.log(`Filled review details for ${name} (${email})`);
+  }
+
+  submitReview() {
+      this.reviewSubmitButton.click();
+      cy.log('Clicked review Submit button.');
+  }
+
+  verifyReviewSuccessMessageVisible() {
+      this.reviewSuccessMessage
+          .should('be.visible', { timeout: 10000 }) // Give time for message to appear
+          .and('contain.text', 'Thank you for your review.'); // Use contain.text for flexibility
+      cy.log('Verified review success message.');
   }
 } 

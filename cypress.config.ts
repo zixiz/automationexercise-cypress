@@ -1,4 +1,8 @@
 import { defineConfig } from 'cypress';
+import { downloadFile } from 'cypress-downloadfile/lib/addPlugin'; 
+import fs from 'fs'; 
+import path from 'path'; 
+
 
 export default defineConfig({
   e2e: {
@@ -11,33 +15,36 @@ export default defineConfig({
     video: false,
     screenshotOnRunFailure: true,
     setupNodeEvents(on, config) {
-      // Implement node event listeners here
-      // Example: Task for logging messages to the terminal during tests
       on('task', {
-        log(message) {
-          console.log(message);
-          return null;
-        },
-        // Add other tasks if needed (e.g., database seeding/teardown)
+          // Existing tasks:
+          downloadFile,
+          log(message) {
+              console.log(message);
+              return null;
+          },
+
+          readFileMaybe(filename: string): string | null {
+             const resolvedPath = path.resolve(filename);
+             console.log(`[Task] Checking for file: ${resolvedPath}`);
+             if (fs.existsSync(resolvedPath)) {
+                 console.log(`[Task] File found: ${resolvedPath}. Reading content.`);
+                  try {
+                     return fs.readFileSync(resolvedPath, 'utf8');
+                  } catch (err) {
+                      console.error(`[Task] Error reading file ${resolvedPath}:`, err);
+                      return null; 
+                  }
+              }
+              console.log(`[Task] File NOT found: ${resolvedPath}`);
+              return null;
+          },
+
       });
-
-      // You can modify the config object here before returning it
-      // config.env = { ...config.env, myEnvVar: 'value' } // Example: Setting env vars
-
-      return config;
-    },
+     return config;
+    }, 
   },
   env: {
-    // Define environment variables accessible via Cypress.env()
-    // Example: Load credentials securely in CI, not hardcoded here
-    // login_email: process.env.CYPRESS_LOGIN_EMAIL || 'test@example.com',
-    // login_password: process.env.CYPRESS_LOGIN_PASSWORD || 'yourpassword'
+
   },
-  // Component testing configuration (if used) goes here
-  // component: {
-  //   devServer: {
-  //     framework: 'react', // or 'vue', 'angular'
-  //     bundler: 'webpack', // or 'vite'
-  //   },
-  // },
+
 }); 

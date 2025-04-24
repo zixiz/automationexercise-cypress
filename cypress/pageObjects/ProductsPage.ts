@@ -1,6 +1,17 @@
-// Page Object Model for the Products page
+interface ProductInfo {
+  id: string;
+  name: string;
+  price: string;
+}
+
+
 export class ProductsPage {
   // --- Selectors ---
+
+  get productsPageTitle() {
+    return cy.get('.features_items h2.title.text-center');
+  }
+
   get allProductsHeading() {
     return cy.contains('.features_items h2.title', 'All Products');
   }
@@ -17,7 +28,18 @@ export class ProductsPage {
     return this.allProductItems.first().find('.choose a[href^="/product_details/"]');
   }
 
-  // --- Search Selectors ---
+  get brandsSidebarSection() {
+    return cy.get('.brands_products');
+  }
+
+  get brandsHeading() {
+    return this.brandsSidebarSection.contains('h2', 'Brands');
+  }
+
+  get allBrandLinks() {
+    return this.brandsSidebarSection.find('.brands-name a');
+  }
+
   get searchInput() {
     return cy.get('#search_product');
   }
@@ -30,25 +52,44 @@ export class ProductsPage {
     return cy.contains('.features_items h2.title', 'Searched Products');
   }
 
-    // Selectors for the "Added!" Modal
-    get addedToCartModal() {
-        return cy.get('#cartModal');
-    }
-    get continueShoppingButton() {
-        return this.addedToCartModal.find('button.close-modal');
-        // Based on HTML: <button class="btn btn-success close-modal btn-block" data-dismiss="modal">Continue Shopping</button>
-    }
-    getViewCartLinkInModal() {
-        // Based on HTML: <p class="text-center"><a href="/view_cart"><u>View Cart</u></a></p>
-        return this.addedToCartModal.find('a[href="/view_cart"]');
-    }
+  get addedToCartModal() {
+    return cy.get('#cartModal');
+  }
+
+  get continueShoppingButton() {
+    return this.addedToCartModal.find('button.close-modal');
+  }
+
+  getViewCartLinkInModal() {
+    return this.addedToCartModal.find('a[href="/view_cart"]');
+  }
+
+  getBrandLinkByName(brandName: string) {
+    return this.brandsSidebarSection.find('.brands-name a').contains(brandName);
+  }
   
+  getAddToCartButtonFromProductItem() {
+    return '.productinfo a.add-to-cart';
+  }
+
+  getAddedToCartModal() {
+    return cy.get('#cartModal');
+  }
+
+  getContinueShoppingButton() {
+    return this.getAddedToCartModal().find('button.close-modal');
+  }
+
+  getSearchedProductsHeading() {
+    return cy.contains('.features_items h2.title', 'Searched Products');
+  }
 
   // --- Actions ---
   verifyAllProductsPageVisible() {
     cy.url().should('include', '/products');
-    cy.get('.features_items h2.title').should('be.visible');
-    cy.log('Verified navigation to a Products page (All or Searched).');
+    // Verify the specific "All Products" title on the initial load
+    this.productsPageTitle.should('be.visible').and('contain.text', 'All Products');
+    cy.log('Verified navigation to All Products page.');
   }
 
   verifyProductListVisible() {
@@ -159,4 +200,76 @@ export class ProductsPage {
             });
         });
     }
+
+    verifyBrandsSidebarVisible() {
+      this.brandsSidebarSection.should('be.visible');
+      this.brandsHeading.should('be.visible');
+      this.allBrandLinks.should('have.length.greaterThan', 0);
+      cy.log('Brands sidebar section is visible.');
+    }
+
+    clickBrandLink(brandName: string) {
+        this.getBrandLinkByName(brandName).click();
+        cy.log(`Clicked brand link: ${brandName}`);
+    }
+
+    verifyBrandPageTitleVisible(brandName: string) {
+      // Assumes the title format is "BRAND - <Name> PRODUCTS"
+      const expectedTitle = `Brand - ${brandName} Products`;
+      // Use the generic page title selector
+      this.productsPageTitle
+          .should('be.visible')
+          .and('contain.text', expectedTitle); // Check for the specific brand title
+      cy.log(`Verified Brand page title: ${expectedTitle}`);
+    }
+
+    addAllDisplayedProductsToCart(): Cypress.Chainable<ProductInfo[]> {
+      const addedProducts: ProductInfo[] = [];
+      cy.log('Adding all displayed products to cart...');
+
+      return this.allProductItems.then($items => {
+          if ($items.length === 0) {
+              cy.log('No products found to add.');
+              return cy.wrap([]);
+          }
+
+          return cy.wrap($items).each(($el, index) => {
+              let currentProduct: ProductInfo = { id: '', name: '', price: '' };
+
+              cy.wrap($el).within(() => {
+                  cy.get('.productinfo a.add-to-cart').invoke('attr', 'data-product-id').then(id => {
+                      currentProduct.id = id ?? `unknown-${index}`;
+                  });
+                  cy.get('.productinfo p').invoke('text').then(name => {
+                      currentProduct.name = name.trim();
+                  });
+                  cy.get('.productinfo h2').invoke('text').then(price => {
+                      currentProduct.price = price.trim();
+                      addedProducts.push(currentProduct);
+                      cy.log(`Details captured for product ${currentProduct.id}: ${currentProduct.name}`);
+                  });
+
+                  cy.log(`Clicking add to cart for product ${currentProduct.id || `index ${index}`}`);
+                  cy.get('.productinfo a.add-to-cart')
+                    .should('be.visible') 
+                    .click(); 
+              });
+
+
+              this.getAddedToCartModal()
+                  .should('be.visible', { timeout: 10000 }); 
+              this.getContinueShoppingButton()
+                  .should('be.visible') 
+                  .click();
+              this.getAddedToCartModal()
+                  .should('not.be.visible', { timeout: 5000 }); 
+               cy.wait(200); 
+
+          }).then(() => {
+              cy.log(`Finished adding ${addedProducts.length} products.`);
+              return cy.wrap(addedProducts);
+          });
+      });
+  }
+
 } 

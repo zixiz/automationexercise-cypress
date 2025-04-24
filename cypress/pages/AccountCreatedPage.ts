@@ -1,4 +1,3 @@
-// Page Object Model for the Account Created page
 export class AccountCreatedPage {
   get accountCreatedHeading() {
     return cy.getByDataQa('account-created');

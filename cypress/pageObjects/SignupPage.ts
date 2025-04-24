@@ -1,4 +1,3 @@
-// Page Object Model for the Signup page
 export class SignupPage {
   // --- Selectors ---
   get accountInformationHeading() {
@@ -172,7 +171,6 @@ export class SignupPage {
     cy.log('Clicked Create Account button');
   }
 
-  // Helper to fill all address details
   fillAddressDetails(details: {
     firstName: string;
     lastName: string;

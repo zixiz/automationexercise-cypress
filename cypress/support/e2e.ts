@@ -1,5 +1,5 @@
-// Import commands.js using ES2015 syntax:
 import './commands';
+import 'cypress-downloadfile/lib/downloadFileCommand'; 
 
 const app = window.top;
 if (app) {

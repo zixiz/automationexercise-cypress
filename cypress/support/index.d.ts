@@ -60,5 +60,17 @@ declare namespace Cypress {
      * @example cy.get('.element').isInViewport()
      */
     isInViewport(): Chainable<Subject>;
+
+     /**
+     * Downloads a file from the given URL.
+     * Requires the 'cypress-downloadfile' plugin and task to be configured.
+     * @param url The absolute URL of the file to download.
+     * @param downloadsFolder The folder within the Cypress project to save the file (e.g., 'cypress/downloads').
+     * @param fileName The name to save the downloaded file as.
+     * @param timeout Optional timeout in milliseconds for the download (default usually around 30000).
+     * @returns Chainable<boolean> indicating if the download task completed successfully.
+     * @example cy.downloadFile('http://example.com/file.pdf', 'cypress/downloads', 'downloaded.pdf')
+     */
+     downloadFile(url: string, downloadsFolder: string, fileName: string, timeout?: number): Chainable<boolean>;
   }
 } 

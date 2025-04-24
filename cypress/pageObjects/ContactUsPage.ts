@@ -1,4 +1,3 @@
-// Page Object Model for the Contact Us page
 export class ContactUsPage {
   // --- Selectors ---
   get getInTouchHeading() {
